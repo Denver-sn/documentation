@@ -1,195 +1,282 @@
 {
-  "openapi": "3.0.1",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
+	"openapi": "3.0.1",
+	"info": {
+		"title": "Dexchange SMS API",
+		"description": "API for sending SMS, OTP, and managing balance via Dexchange SMS",
+		"license": {
+			"name": "MIT"
+		},
+		"version": "1.0.0"
+	},
+	"servers": [
+		{
+			"url": "https://api-v2.dexchange-sms.com"
+		}
+	],
+	"security": [
+		{
+			"bearerAuth": []
+		}
+	],
+	"paths": {
+		"/api/v1/send/sms": {
+			"post": {
+				"description": "Sends an SMS to the provided numbers",
+				"requestBody": {
+					"description": "Details for sending an SMS",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SendSms"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "SMS sent successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SmsResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error in sending SMS",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/balance": {
+			"get": {
+				"description": "Retrieves the current SMS balance",
+				"responses": {
+					"200": {
+						"description": "Balance retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BalanceResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error in retrieving balance",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/send/otp": {
+			"post": {
+				"description": "Sends an OTP to the specified number",
+				"requestBody": {
+					"description": "Details for sending an OTP",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SendOtp"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OTP sent successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OtpResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error in sending OTP",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/verify/otp": {
+			"post": {
+				"description": "Verifies an OTP for a given number",
+				"requestBody": {
+					"description": "Details for verifying an OTP",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VerifyOtp"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "OTP verified successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OtpVerificationResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Error in verifying OTP",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"SendSms": {
+				"required": ["signature", "content", "number"],
+				"type": "object",
+				"properties": {
+					"signature": {
+						"description": "The sender's signature",
+						"type": "string"
+					},
+					"content": {
+						"description": "The content of the SMS",
+						"type": "string"
+					},
+					"number": {
+						"description": "Array of recipient phone numbers",
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"SmsResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"description": "The status of the SMS",
+						"type": "string"
+					},
+					"message": {
+						"description": "Additional information about the SMS",
+						"type": "string"
+					}
+				}
+			},
+			"BalanceResponse": {
+				"type": "object",
+				"properties": {
+					"balance": {
+						"description": "The current SMS balance",
+						"type": "integer"
+					}
+				}
+			},
+			"SendOtp": {
+				"required": ["service", "number"],
+				"type": "object",
+				"properties": {
+					"service": {
+						"description": "Service for which the OTP is requested",
+						"type": "string"
+					},
+					"number": {
+						"description": "Phone number to send the OTP to",
+						"type": "string"
+					}
+				}
+			},
+			"OtpResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"description": "The status of the OTP",
+						"type": "string"
+					}
+				}
+			},
+			"VerifyOtp": {
+				"required": ["otp", "number", "service"],
+				"type": "object",
+				"properties": {
+					"otp": {
+						"description": "The OTP to verify",
+						"type": "string"
+					},
+					"number": {
+						"description": "Phone number for which the OTP is verified",
+						"type": "string"
+					},
+					"service": {
+						"description": "Service for which the OTP is being verified",
+						"type": "string"
+					}
+				}
+			},
+			"OtpVerificationResponse": {
+				"type": "object",
+				"properties": {
+					"status": {
+						"description": "Verification result status",
+						"type": "string"
+					},
+					"message": {
+						"description": "Additional verification details",
+						"type": "string"
+					}
+				}
+			},
+			"Error": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer"
+			}
+		}
+	}
 }
